@@ -1,0 +1,28 @@
+{
+  "name": "miniprogram-hold",
+  "version": "0.1.0",
+  "description": "Hold Page's lifecycle until the 'startPage' method trigger.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mingenesis/miniprogram-hold.git"
+  },
+  "author": "ming",
+  "main": "lib/miniprogram-hold.js",
+  "module": "es/miniprogram-hold.js",
+  "files": [
+    "miniprogram_dist",
+    "lib",
+    "es",
+    "src"
+  ],
+  "scripts": {
+    "clean": "rimraf lib es miniprogram_dist",
+    "lint": "miniprogram-scripts lint",
+    "build": "npm run lint && miniprogram-scripts build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "miniprogram-scripts": "0.1.0"
+  }
+}
