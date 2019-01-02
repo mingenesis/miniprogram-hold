@@ -117,5 +117,11 @@ export default function hold(WrappedConfig = {}) {
         }
       }
     },
+
+    endPage() {
+      this._didStartPage = false;
+      this._shouldOnLoad = true;
+      this._shouldOnReady = true;
+    },
   };
 }
