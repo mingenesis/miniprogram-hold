@@ -1,6 +1,6 @@
 {
   "name": "miniprogram-hold",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Hold Page's lifecycle until the 'startPage' method trigger.",
   "license": "MIT",
   "repository": {
@@ -17,12 +17,14 @@
     "src"
   ],
   "scripts": {
+    "prepublish": "npm run clean && npm run build",
     "clean": "rimraf lib es miniprogram_dist",
     "lint": "miniprogram-scripts lint",
     "build": "miniprogram-scripts build"
   },
   "dependencies": {},
   "devDependencies": {
-    "miniprogram-scripts": "^0.3.0"
+    "miniprogram-scripts": "^0.3.0",
+    "rimraf": "^2.6.2"
   }
 }
