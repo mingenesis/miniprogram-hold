@@ -1,6 +1,6 @@
 {
   "name": "miniprogram-hold",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Hold Page's lifecycle until the 'startPage' method trigger.",
   "license": "MIT",
   "repository": {
@@ -26,7 +26,6 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
     "eslint": "^5.9.0",
