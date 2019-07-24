@@ -1,5 +1,5 @@
 # miniprogram-hold
 
-Hold Page's lifecycle until the 'startPage' method trigger.
+Hold Component's lifetimes until the `unhold` method trigger.
 
-Miniprogram Hold requires **Wechat Miniprogram 2.2.3 or later.**
+`miniprogram-hold` requires **Wechat Miniprogram 2.2.3 or later.**
