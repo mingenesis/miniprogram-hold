@@ -1,127 +1,217 @@
-export default function hold(WrappedConfig = {}) {
-  return {
-    ...WrappedConfig,
+export default Behavior({
+  definitionFilter(defFields) {
+    defFields.lifetimes = defFields.lifetimes || {};
+    defFields.pageLifetimes = defFields.pageLifetimes || {};
+    defFields.methods = defFields.methods || {};
 
-    onLoad(options) {
-      if (!this._didStartPage) {
-        this._shouldOnLoad = true;
-        return;
-      }
+    const { created, attached, ready, moved, detached } = defFields.lifetimes;
+    const { show, hide, resize } = defFields.pageLifetimes;
+    const {
+      onLoad,
+      onShow,
+      onReady,
+      onHide,
+      onUnload,
+      onShareAppMessage,
+      onResize,
+      onPageScroll,
+      onPullDownRefresh,
+      onReachBottom,
+      onTabItemTap,
+    } = defFields.methods;
 
-      if (WrappedConfig.onLoad) {
-        WrappedConfig.onLoad.call(this, options);
-      }
-    },
-    onReady() {
-      if (!this._didStartPage) {
-        this._shouldOnReady = true;
-        return;
-      }
+    defFields.methods.unhold = function() {
+      this._didStart = true;
 
-      if (WrappedConfig.onReady) {
-        WrappedConfig.onReady.call(this);
-      }
-    },
-    onShow() {
-      if (!this._didStartPage) {
-        this._shouldOnShow = true;
-        return;
-      }
-
-      if (WrappedConfig.onShow) {
-        WrappedConfig.onShow.call(this);
-      }
-    },
-    onHide() {
-      if (!this._didStartPage) {
-        this._shouldOnShow = false;
-        return;
-      }
-
-      if (WrappedConfig.onHide) {
-        WrappedConfig.onHide.call(this);
-      }
-    },
-    onUnload() {
-      if (!this._didStartPage) {
-        this._shouldOnLoad = false;
-        this._shouldOnReady = false;
-        this._shouldOnShow = false;
-        return;
-      }
-
-      if (WrappedConfig.onUnload) {
-        WrappedConfig.onUnload.call(this);
-      }
-    },
-    onPullDownRefresh() {
-      if (!this._didStartPage) {
-        wx.stopPullDownRefresh();
-        return;
-      }
-
-      if (WrappedConfig.onPullDownRefresh) {
-        WrappedConfig.onPullDownRefresh.call(this);
-      }
-    },
-    onReachBottom() {
-      if (!this._didStartPage) {
-        return;
-      }
-
-      if (WrappedConfig.onReachBottom) {
-        WrappedConfig.onReachBottom.call(this);
-      }
-    },
-    onPageScroll(options) {
-      if (!this._didStartPage) {
-        return;
-      }
-
-      if (WrappedConfig.onPageScroll) {
-        WrappedConfig.onPageScroll.call(this, options);
-      }
-    },
-    onTabItemTap(options) {
-      if (!this._didStartPage) {
-        return;
-      }
-
-      if (WrappedConfig.onTabItemTap) {
-        WrappedConfig.onTabItemTap.call(this, options);
-      }
-    },
-
-    startPage() {
-      this._didStartPage = true;
-
-      if (this._shouldOnLoad) {
-        this._shouldOnLoad = false;
-
-        if (WrappedConfig.onLoad) {
-          WrappedConfig.onLoad.call(this, this.options);
+      if (this._didCreate) {
+        if (created) {
+          created.call(this);
         }
       }
-      if (this._shouldOnReady) {
-        this._shouldOnReady = false;
-
-        if (WrappedConfig.onReady) {
-          WrappedConfig.onReady.call(this);
+      if (this._didReady) {
+        if (ready) {
+          ready.call(this);
+        }
+        if (onReady) {
+          onReady.call(this);
         }
       }
-      if (this._shouldOnShow) {
-        this._shouldOnShow = false;
-
-        if (WrappedConfig.onShow) {
-          WrappedConfig.onShow.call(this);
+      if (this._didAttach) {
+        if (attached) {
+          attached.call(this);
+        }
+        if (onLoad) {
+          onLoad.call(this);
         }
       }
-    },
+      if (this._didShow) {
+        if (show) {
+          show.call(this);
+        }
+        if (onShow) {
+          onShow.call(this);
+        }
+      }
+    };
 
-    endPage() {
-      this._didStartPage = false;
-      this._shouldOnLoad = true;
-      this._shouldOnReady = true;
-    },
-  };
-}
+    defFields.lifetimes.created = function() {
+      if (!this._didStart) {
+        this._didCreate = true;
+        return;
+      }
+      if (created) {
+        return created.call(this);
+      }
+    };
+    defFields.lifetimes.ready = function() {
+      if (!this._didStart) {
+        this._didReady = true;
+        return;
+      }
+      if (ready) {
+        return ready.call(this);
+      }
+    };
+    defFields.lifetimes.attached = function() {
+      if (!this._didStart) {
+        this._didAttach = true;
+        return;
+      }
+      if (attached) {
+        return attached.call(this);
+      }
+    };
+    defFields.lifetimes.detached = function() {
+      if (!this._didStart) {
+        this._didAttach = undefined;
+        return;
+      }
+      if (detached) {
+        return detached.call(this);
+      }
+    };
+    defFields.pageLifetimes.show = function() {
+      if (!this._didStart) {
+        this._didShow = true;
+        return;
+      }
+      if (show) {
+        return show.call(this);
+      }
+    };
+    defFields.pageLifetimes.hide = function() {
+      if (!this._didStart) {
+        this._didShow = undefined;
+        return;
+      }
+      if (hide) {
+        return hide.call(this);
+      }
+    };
+    if (moved) {
+      defFields.lifetimes.moved = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return moved.call(this);
+      };
+    }
+    if (resize) {
+      defFields.pageLifetimes.resize = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return resize.call(this);
+      };
+    }
+    if (onLoad) {
+      defFields.methods.onLoad = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onLoad.call(this);
+      };
+    }
+    if (onShow) {
+      defFields.methods.onShow = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onShow.call(this);
+      };
+    }
+    if (onReady) {
+      defFields.methods.onReady = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onReady.call(this);
+      };
+    }
+    if (onHide) {
+      defFields.methods.onHide = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onHide.call(this);
+      };
+    }
+    if (onUnload) {
+      defFields.methods.onUnload = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onUnload.call(this);
+      };
+    }
+    if (onShareAppMessage) {
+      defFields.methods.onShareAppMessage = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onShareAppMessage.call(this);
+      };
+    }
+    if (onResize) {
+      defFields.methods.onResize = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onResize.call(this);
+      };
+    }
+    if (onPageScroll) {
+      defFields.methods.onPageScroll = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onPageScroll.call(this);
+      };
+    }
+    if (onPullDownRefresh) {
+      defFields.methods.onPullDownRefresh = function() {
+        if (!this._didStart) {
+          wx.stopPullDownRefresh();
+          return;
+        }
+        return onPullDownRefresh.call(this);
+      };
+    }
+    if (onReachBottom) {
+      defFields.methods.onReachBottom = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onReachBottom.call(this);
+      };
+    }
+    if (onTabItemTap) {
+      defFields.methods.onTabItemTap = function() {
+        if (!this._didStart) {
+          return;
+        }
+        return onTabItemTap.call(this);
+      };
+    }
+  },
+});
