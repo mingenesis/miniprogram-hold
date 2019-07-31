@@ -41,7 +41,7 @@ export default Behavior({
           attached.call(this);
         }
         if (onLoad) {
-          onLoad.call(this);
+          onLoad.call(this, this.options);
         }
       }
       if (this._didShow) {
@@ -125,11 +125,11 @@ export default Behavior({
       };
     }
     if (onLoad) {
-      defFields.methods.onLoad = function() {
+      defFields.methods.onLoad = function(options) {
         if (!this._didStart) {
           return;
         }
-        return onLoad.call(this);
+        return onLoad.call(this, options);
       };
     }
     if (onShow) {
@@ -173,19 +173,19 @@ export default Behavior({
       };
     }
     if (onResize) {
-      defFields.methods.onResize = function() {
+      defFields.methods.onResize = function(evt) {
         if (!this._didStart) {
           return;
         }
-        return onResize.call(this);
+        return onResize.call(this, evt);
       };
     }
     if (onPageScroll) {
-      defFields.methods.onPageScroll = function() {
+      defFields.methods.onPageScroll = function(evt) {
         if (!this._didStart) {
           return;
         }
-        return onPageScroll.call(this);
+        return onPageScroll.call(this, evt);
       };
     }
     if (onPullDownRefresh) {
@@ -206,11 +206,11 @@ export default Behavior({
       };
     }
     if (onTabItemTap) {
-      defFields.methods.onTabItemTap = function() {
+      defFields.methods.onTabItemTap = function(evt) {
         if (!this._didStart) {
           return;
         }
-        return onTabItemTap.call(this);
+        return onTabItemTap.call(this, evt);
       };
     }
   },

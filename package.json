@@ -1,6 +1,6 @@
 {
   "name": "miniprogram-hold",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hold Component's lifetimes until the `unhold` method trigger.",
   "keywords": [
     "miniprogram",
