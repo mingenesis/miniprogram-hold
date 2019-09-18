@@ -1,4 +1,6 @@
 export default Behavior({
+  data: { holding: true },
+
   definitionFilter(defFields) {
     defFields.lifetimes = defFields.lifetimes || {};
     defFields.pageLifetimes = defFields.pageLifetimes || {};
@@ -21,197 +23,117 @@ export default Behavior({
     } = defFields.methods;
 
     defFields.methods.unhold = function() {
-      this._didStart = true;
-
-      if (this._didCreate) {
-        if (created) {
-          created.call(this);
+      this.setData({ holding: false }, () => {
+        if (this._didCreate) {
+          if (created) {
+            created.call(this);
+          }
         }
-      }
-      if (this._didReady) {
-        if (ready) {
-          ready.call(this);
+        if (this._didReady) {
+          if (ready) {
+            ready.call(this);
+          }
+          if (onReady) {
+            onReady.call(this);
+          }
         }
-        if (onReady) {
-          onReady.call(this);
+        if (this._didAttach) {
+          if (attached) {
+            attached.call(this);
+          }
+          if (onLoad) {
+            onLoad.call(this, this.options);
+          }
         }
-      }
-      if (this._didAttach) {
-        if (attached) {
-          attached.call(this);
+        if (this._didShow) {
+          if (show) {
+            show.call(this);
+          }
+          if (onShow) {
+            onShow.call(this);
+          }
         }
-        if (onLoad) {
-          onLoad.call(this, this.options);
-        }
-      }
-      if (this._didShow) {
-        if (show) {
-          show.call(this);
-        }
-        if (onShow) {
-          onShow.call(this);
-        }
-      }
+      });
     };
 
-    defFields.lifetimes.created = function() {
-      if (!this._didStart) {
-        this._didCreate = true;
-        return;
-      }
-      if (created) {
-        return created.call(this);
-      }
-    };
-    defFields.lifetimes.ready = function() {
-      if (!this._didStart) {
-        this._didReady = true;
-        return;
-      }
-      if (ready) {
-        return ready.call(this);
-      }
-    };
-    defFields.lifetimes.attached = function() {
-      if (!this._didStart) {
-        this._didAttach = true;
-        return;
-      }
-      if (attached) {
-        return attached.call(this);
-      }
-    };
-    defFields.lifetimes.detached = function() {
-      if (!this._didStart) {
-        this._didAttach = undefined;
-        return;
-      }
-      if (detached) {
-        return detached.call(this);
-      }
-    };
-    defFields.pageLifetimes.show = function() {
-      if (!this._didStart) {
-        this._didShow = true;
-        return;
-      }
-      if (show) {
-        return show.call(this);
-      }
-    };
-    defFields.pageLifetimes.hide = function() {
-      if (!this._didStart) {
-        this._didShow = undefined;
-        return;
-      }
-      if (hide) {
-        return hide.call(this);
-      }
-    };
-    if (moved) {
-      defFields.lifetimes.moved = function() {
-        if (!this._didStart) {
+    function createMethodForHold(method, cancel) {
+      return function() {
+        if (this.data.holding) {
+          if (cancel) {
+            return cancel.apply(this, arguments);
+          }
           return;
         }
-        return moved.call(this);
+
+        if (method) {
+          return method.apply(this, arguments);
+        }
       };
+    }
+
+    defFields.lifetimes.created = createMethodForHold(created, function() {
+      this._didCreate = true;
+    });
+    defFields.lifetimes.ready = createMethodForHold(ready, function() {
+      this._didReady = true;
+    });
+    defFields.lifetimes.attached = createMethodForHold(attached, function() {
+      this._didAttach = true;
+    });
+    defFields.lifetimes.detached = createMethodForHold(detached, function() {
+      this._didAttach = false;
+    });
+    defFields.pageLifetimes.show = createMethodForHold(show, function() {
+      this._didShow = true;
+    });
+    defFields.pageLifetimes.hide = createMethodForHold(hide, function() {
+      this._didShow = false;
+    });
+    if (moved) {
+      defFields.lifetimes.moved = createMethodForHold(moved);
     }
     if (resize) {
-      defFields.pageLifetimes.resize = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return resize.call(this);
-      };
+      defFields.pageLifetimes.resize = createMethodForHold(resize);
     }
     if (onLoad) {
-      defFields.methods.onLoad = function(options) {
-        if (!this._didStart) {
-          return;
-        }
-        return onLoad.call(this, options);
-      };
+      defFields.methods.onLoad = createMethodForHold(onLoad);
     }
     if (onShow) {
-      defFields.methods.onShow = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return onShow.call(this);
-      };
+      defFields.methods.onShow = createMethodForHold(onShow);
     }
     if (onReady) {
-      defFields.methods.onReady = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return onReady.call(this);
-      };
+      defFields.methods.onReady = createMethodForHold(onReady);
     }
     if (onHide) {
-      defFields.methods.onHide = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return onHide.call(this);
-      };
+      defFields.methods.onHide = createMethodForHold(onHide);
     }
     if (onUnload) {
-      defFields.methods.onUnload = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return onUnload.call(this);
-      };
+      defFields.methods.onUnload = createMethodForHold(onUnload);
     }
     if (onShareAppMessage) {
-      defFields.methods.onShareAppMessage = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return onShareAppMessage.call(this);
-      };
+      defFields.methods.onShareAppMessage = createMethodForHold(
+        onShareAppMessage
+      );
     }
     if (onResize) {
-      defFields.methods.onResize = function(evt) {
-        if (!this._didStart) {
-          return;
-        }
-        return onResize.call(this, evt);
-      };
+      defFields.methods.onResize = createMethodForHold(onResize);
     }
     if (onPageScroll) {
-      defFields.methods.onPageScroll = function(evt) {
-        if (!this._didStart) {
-          return;
-        }
-        return onPageScroll.call(this, evt);
-      };
+      defFields.methods.onPageScroll = createMethodForHold(onPageScroll);
     }
     if (onPullDownRefresh) {
-      defFields.methods.onPullDownRefresh = function() {
-        if (!this._didStart) {
+      defFields.methods.onPullDownRefresh = createMethodForHold(
+        onPullDownRefresh,
+        function() {
           wx.stopPullDownRefresh();
-          return;
         }
-        return onPullDownRefresh.call(this);
-      };
+      );
     }
     if (onReachBottom) {
-      defFields.methods.onReachBottom = function() {
-        if (!this._didStart) {
-          return;
-        }
-        return onReachBottom.call(this);
-      };
+      defFields.methods.onReachBottom = createMethodForHold(onReachBottom);
     }
     if (onTabItemTap) {
-      defFields.methods.onTabItemTap = function(evt) {
-        if (!this._didStart) {
-          return;
-        }
-        return onTabItemTap.call(this, evt);
-      };
+      defFields.methods.onTabItemTap = createMethodForHold(onTabItemTap);
     }
   },
 });
